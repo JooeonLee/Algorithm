@@ -9,7 +9,7 @@ int main() {
 
     cin >> N >> Q;
     
-    vector<long long> tree(N);
+    vector<int> tree(N);
     vector<long long> sumTree(N);
     vector<long long> picture(Q);
 
