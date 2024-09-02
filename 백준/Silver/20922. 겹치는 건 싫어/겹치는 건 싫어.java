@@ -1,47 +1,43 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.StringTokenizer;
-import java.util.Vector;
 
 public class Main {
+
+    static int[] arr = new int[200000];
+    static int[] count = new int[100001];
 
     static FastReader scanner = new FastReader();
     static StringBuilder builder = new StringBuilder();
 
     static int N, K;
-    static Vector<Integer> arr = new Vector<>();
-    static HashMap<Integer, Integer> countMap = new HashMap<>();
 
     static void input() {
         N = scanner.nextInt();
         K = scanner.nextInt();
 
         for (int i = 0; i < N; i++) {
-            arr.add(scanner.nextInt());
+            arr[i] = scanner.nextInt();
         }
     }
 
     static int maxLength() {
         int start = 0;
+        int end = 0;
         int maxLength = 0;
 
-        for(int end=0; end<N; end++) {
-            countMap.put(arr.get(end), countMap.getOrDefault(arr.get(end), 0) + 1);
-
-            while(countMap.get(arr.get(end)) > K) {
-                countMap.put(arr.get(start), countMap.get(arr.get(start)) - 1);
-                if(countMap.get(arr.get(start)) == 0) {
-                    countMap.remove(arr.get(start));
-                }
+        while (end < N) {
+            if (count[arr[end]] != K) {
+                count[arr[end]]++;
+                end++;
+            }
+            else {
+                count[arr[start]]--;
                 start++;
             }
-
-            maxLength = Math.max(maxLength, end - start + 1);
+            maxLength = Math.max(maxLength, end - start);
         }
-
         return maxLength;
     }
 
