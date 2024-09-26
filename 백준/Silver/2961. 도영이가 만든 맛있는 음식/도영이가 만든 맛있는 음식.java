@@ -1,6 +1,4 @@
 import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.StringTokenizer;
 
 public class Main {
@@ -9,16 +7,17 @@ public class Main {
     static StringBuilder builder = new StringBuilder();
 
     static int N;
-    static long sourness_multi = 1;
-    static long bitterness_sum = 0;
     static long diff = Long.MAX_VALUE;
     static int[] sourness_arr = new int[10];
     static int[] bitterness_arr = new int[10];
+    static boolean[] isSelected = new boolean[10];
 
     public static void main(String[] args) {
         input();
-        for(int r=1; r<N+1; r++)
-            combination(new ArrayList<>(), new ArrayList<>(), 0, r);
+        for(int r=1; r<N+1; r++) {
+            init_isSelected();
+            combination(0, 0, r);
+        }
 
         System.out.println(diff);
     }
@@ -33,33 +32,44 @@ public class Main {
     }
 
 
-    static void combination(List<Integer> current_s, List<Integer> current_b, int start, int r) {
-        if(current_s.size() == r) {
-            long cur_s_mul = 1;
-            long cur_b_sum = 0;
-            long cur_diff = 0;
+    static void combination(int start, int selected, int r) {
+        if(selected == r) {
+            calculate();
+            return;
+        }
 
-            for(int i = 0; i < current_s.size(); i++) {
-                cur_s_mul *= current_s.get(i);
-                cur_b_sum += current_b.get(i);
+        for(int i = start; i < N; i++) {
+            isSelected[i] = true;
+            combination(i+1, selected+1, r);
+            isSelected[i] = false;
+        }
+    }
+
+    static void calculate() {
+        long cur_s_mul = 1;
+        long cur_b_sum = 0;
+        int count = 0;
+
+        for(int i = 0; i<N; i++) {
+            if(isSelected[i]) {
+                cur_s_mul *= sourness_arr[i];
+                cur_b_sum += bitterness_arr[i];
+                count++;
             }
-            cur_diff = Math.abs(cur_s_mul - cur_b_sum);
+        }
 
+        if(count>0) {
+            long cur_diff = Math.abs(cur_s_mul - cur_b_sum);
             if(cur_diff < diff) {
                 diff = cur_diff;
             }
         }
-
-        for(int i = start; i < N; i++) {
-            current_s.add(sourness_arr[i]);
-            current_b.add(bitterness_arr[i]);
-
-            combination(current_s, current_b, i + 1, r);
-            current_s.remove(current_s.size() - 1);
-            current_b.remove(current_b.size() - 1);
-        }
     }
 
+    static void init_isSelected() {
+        for(int i=0; i<10; i++)
+            isSelected[i] = false;
+    }
     static class FastReader {
         BufferedReader br;
         StringTokenizer st;
