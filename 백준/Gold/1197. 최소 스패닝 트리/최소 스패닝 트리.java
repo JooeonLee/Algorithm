@@ -2,43 +2,42 @@ import java.io.*;
 import java.util.*;
 
 public class Main {
-    static int V, E; // V: 정점 수, E: 간선 수
-    static int[] parent;
-    static PriorityQueue<Edge> pq;
+    public static void main(String[] args) {
 
-    public static void main(String[] args) throws IOException {
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        StringTokenizer st = new StringTokenizer(br.readLine());
-
-        V = Integer.parseInt(st.nextToken());
-        E = Integer.parseInt(st.nextToken());
-
-        // Union-Find용 부모 배열 초기화
-        parent = new int[V + 1];
-        for (int i = 1; i <= V; i++) {
-            parent[i] = i;
-        }
-
-        // 간선 정보를 우선순위 큐에 저장 (가중치가 작은 순으로 정렬됨)
-        pq = new PriorityQueue<>();
-        for (int i = 0; i < E; i++) {
-            st = new StringTokenizer(br.readLine());
-            int u = Integer.parseInt(st.nextToken());
-            int v = Integer.parseInt(st.nextToken());
-            int weight = Integer.parseInt(st.nextToken());
-            pq.add(new Edge(u, v, weight));
-        }
-
+        input();
         System.out.println(kruskal());
     }
 
-    // 크루스칼 알고리즘을 이용해 최소 스패닝 트리의 가중치 합 계산
+    static FastReader scan = new FastReader();
+    static StringBuilder sb = new StringBuilder();
+
+    static int V, E;
+    static int[] parent;
+    static PriorityQueue<Edge> pq;
+
+    static void input() {
+        V = scan.nextInt();
+        E = scan.nextInt();
+        parent = new int[V + 1];
+        for (int i = 0; i < V + 1; i++) {
+            parent[i] = i;
+        }
+
+        pq = new PriorityQueue<>();
+        for (int i = 0; i < E; i++) {
+            int u = scan.nextInt();
+            int v = scan.nextInt();
+            int weight = scan.nextInt();
+            
+            pq.add(new Edge(u, v, weight));
+        }
+    }
+
     static long kruskal() {
         long mstWeight = 0;
         int edgesUsed = 0;
 
-        // 간선이 가중치 작은 순으로 정렬되어 있으므로, 작은 것부터 선택
-        while (!pq.isEmpty() && edgesUsed < V - 1) {
+        while(!pq.isEmpty() && edgesUsed < V-1) {
             Edge edge = pq.poll();
             if (find(edge.u) != find(edge.v)) { // 사이클이 생기지 않는 경우만 추가
                 union(edge.u, edge.v);
@@ -46,11 +45,9 @@ public class Main {
                 edgesUsed++;
             }
         }
-
         return mstWeight;
     }
 
-    // 유니온-파인드: find 연산 (경로 압축)
     static int find(int node) {
         if (parent[node] != node) {
             parent[node] = find(parent[node]);
@@ -58,7 +55,6 @@ public class Main {
         return parent[node];
     }
 
-    // 유니온-파인드: union 연산
     static void union(int u, int v) {
         int rootU = find(u);
         int rootV = find(v);
@@ -67,7 +63,6 @@ public class Main {
         }
     }
 
-    // 간선 클래스 정의
     static class Edge implements Comparable<Edge> {
         int u, v, weight;
 
@@ -80,6 +75,52 @@ public class Main {
         @Override
         public int compareTo(Edge other) {
             return this.weight - other.weight;
+        }
+    }
+
+    static class FastReader {
+        BufferedReader br;
+        StringTokenizer st;
+
+        public FastReader() {
+            br = new BufferedReader(new InputStreamReader(System.in));
+        }
+
+        public FastReader(String s) throws FileNotFoundException {
+            br = new BufferedReader(new FileReader(new File(s)));
+        }
+
+        String next() {
+            while (st == null || !st.hasMoreElements()) {
+                try {
+                    st = new StringTokenizer(br.readLine());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            return st.nextToken();
+        }
+
+        int nextInt() {
+            return Integer.parseInt(next());
+        }
+
+        long nextLong() {
+            return Long.parseLong(next());
+        }
+
+        double nextDouble() {
+            return Double.parseDouble(next());
+        }
+
+        String nextLine() {
+            String str = "";
+            try {
+                str = br.readLine();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return str;
         }
     }
 }
