@@ -30,11 +30,11 @@ public class Main {
             if (current == K) break;
 
             // 순간이동 (비용 0)
-            int teleportationIdx = current * 2;
-            if (isValidIdx(teleportationIdx) && checkWithTime[teleportationIdx] > checkWithTime[current]) {
-                deque.offerFirst(teleportationIdx);
-                checkWithTime[teleportationIdx] = checkWithTime[current];
-            }
+//            int teleportationIdx = current * 2;
+//            if (isValidIdx(teleportationIdx) && checkWithTime[teleportationIdx] > checkWithTime[current]) {
+//                deque.offerFirst(teleportationIdx);
+//                checkWithTime[teleportationIdx] = checkWithTime[current];
+//            }
 
             // 오른쪽 이동 (비용 1)
             int rightIdx = current + 1;
@@ -48,6 +48,12 @@ public class Main {
             if (isValidIdx(leftIdx) && checkWithTime[leftIdx] > checkWithTime[current] + 1) {
                 deque.offerLast(leftIdx);
                 checkWithTime[leftIdx] = checkWithTime[current] + 1;
+            }
+            
+            int teleportationIdx = current * 2;
+            if (isValidIdx(teleportationIdx) && checkWithTime[teleportationIdx] > checkWithTime[current]) {
+                deque.offerFirst(teleportationIdx);
+                checkWithTime[teleportationIdx] = checkWithTime[current];
             }
         }
     }
