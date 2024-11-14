@@ -3,17 +3,13 @@ import java.util.*;
 
 public class Main {
     public static void main(String[] args) {
-
         input();
         bfsWithTeleportation();
-        System.out.println(checkWithTime[K] - 1);
+        System.out.println(checkWithTime[K]);
     }
 
     static FastReader scan = new FastReader();
-    static StringBuilder sb = new StringBuilder();
-
-    static Queue<Integer> queue = new LinkedList<>();
-    static int [] checkWithTime = new int [100001];
+    static int[] checkWithTime = new int[100001];
     static int N, K;
 
     static void input() {
@@ -22,54 +18,43 @@ public class Main {
     }
 
     static void bfsWithTeleportation() {
-        queue.offer(N);
-        Arrays.fill(checkWithTime, 0);
-        checkWithTime[N] = 1;
+        Deque<Integer> deque = new LinkedList<>();
+        Arrays.fill(checkWithTime, Integer.MAX_VALUE);  // 최대값으로 초기화
+        deque.offerFirst(N);
+        checkWithTime[N] = 0;  // 시작 위치의 시간을 0으로 설정
 
-        while (!queue.isEmpty()) {
-            int current = queue.poll();
+        while (!deque.isEmpty()) {
+            int current = deque.pollFirst();
 
-//            if(current == K)
-//                break;
+            // 목표 위치에 도달한 경우 탐색 종료
+            if (current == K) break;
 
-            int leftIdx = current - 1;
-            if(isValidIdx(leftIdx) && (checkWithTime[leftIdx] == 0)) {
-                queue.offer(leftIdx);
-                checkWithTime[leftIdx] = checkWithTime[current] + 1;
-            }
-            else if (isValidIdx(leftIdx) && (checkWithTime[leftIdx] > checkWithTime[current]+1)) {
-                queue.offer(leftIdx);
-                checkWithTime[leftIdx] = checkWithTime[current] + 1;
-            }
-
-            int rightIdx = current + 1;
-            if(isValidIdx(rightIdx) && (checkWithTime[rightIdx] == 0)) {
-                queue.offer(rightIdx);
-                checkWithTime[rightIdx] = checkWithTime[current] + 1;
-            }
-            else if (isValidIdx(rightIdx) && (checkWithTime[rightIdx] > checkWithTime[current]+1)) {
-                queue.offer(rightIdx);
-                checkWithTime[rightIdx] = checkWithTime[current] + 1;
-            }
-
+            // 순간이동 (비용 0)
             int teleportationIdx = current * 2;
-            if(isValidIdx(teleportationIdx) && (checkWithTime[teleportationIdx] == 0)) {
-                queue.offer(teleportationIdx);
-                checkWithTime[teleportationIdx] = checkWithTime[current];
-            }
-            else if (isValidIdx(teleportationIdx) && (checkWithTime[teleportationIdx] > checkWithTime[current])) {
-                queue.offer(teleportationIdx);
+            if (isValidIdx(teleportationIdx) && checkWithTime[teleportationIdx] > checkWithTime[current]) {
+                deque.offerFirst(teleportationIdx);
                 checkWithTime[teleportationIdx] = checkWithTime[current];
             }
 
+            // 오른쪽 이동 (비용 1)
+            int rightIdx = current + 1;
+            if (isValidIdx(rightIdx) && checkWithTime[rightIdx] > checkWithTime[current] + 1) {
+                deque.offerLast(rightIdx);
+                checkWithTime[rightIdx] = checkWithTime[current] + 1;
+            }
+
+            // 왼쪽 이동 (비용 1)
+            int leftIdx = current - 1;
+            if (isValidIdx(leftIdx) && checkWithTime[leftIdx] > checkWithTime[current] + 1) {
+                deque.offerLast(leftIdx);
+                checkWithTime[leftIdx] = checkWithTime[current] + 1;
+            }
         }
-
     }
 
     static boolean isValidIdx(int idx) {
         return idx >= 0 && idx < 100001;
     }
-
 
     static class FastReader {
         BufferedReader br;
@@ -77,10 +62,6 @@ public class Main {
 
         public FastReader() {
             br = new BufferedReader(new InputStreamReader(System.in));
-        }
-
-        public FastReader(String s) throws FileNotFoundException {
-            br = new BufferedReader(new FileReader(new File(s)));
         }
 
         String next() {
@@ -97,23 +78,7 @@ public class Main {
         int nextInt() {
             return Integer.parseInt(next());
         }
-
-        long nextLong() {
-            return Long.parseLong(next());
-        }
-
-        double nextDouble() {
-            return Double.parseDouble(next());
-        }
-
-        String nextLine() {
-            String str = "";
-            try {
-                str = br.readLine();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            return str;
-        }
     }
 }
+
+
