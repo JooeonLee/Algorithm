@@ -31,20 +31,20 @@ public class Main {
     }
 
     static void pro() {
-        Deque<Integer> queue = new LinkedList<>();
+        Stack<Integer> stack = new Stack<>();
         // 제일 앞에 "정렬될 수 있는" 정점 찾기
         for (int i = 1; i <= N; i++)
             if (indeg[i] == 0) {
-                queue.add(i);
+                stack.push(i);
                 T_done[i] = T[i];
             }
 
         // 위상 정렬 순서대로 T_done 계산을 함께 해주기
-        while (!queue.isEmpty()) {
-            int x = queue.poll();
+        while (!stack.isEmpty()) {
+            int x = stack.pop();
             for (int y : adj[x]) {
                 indeg[y]--;
-                if (indeg[y] == 0) queue.add(y);
+                if (indeg[y] == 0) stack.add(y);
                 T_done[y] = Math.max(T_done[y], T_done[x] + T[y]);
             }
         }
