@@ -13,12 +13,14 @@ public class Main {
     static FastReader scan = new FastReader();
     static List<List<int[]>> tree = new ArrayList<>();
     static boolean[] visited;
+    static boolean[] isLeaf;
     static int N;
     static int diameter = 0;
 
     static void input() {
         N = scan.nextInt();
         visited = new boolean[N+1];
+        isLeaf = new boolean[N+1];
         for (int i = 0; i <= N; i++) {
             tree.add(new ArrayList<>());
         }
@@ -30,12 +32,22 @@ public class Main {
             tree.get(u).add(new int[]{v, w});
             tree.get(v).add(new int[]{u, w});
         }
+        for(int i = 1; i <= N; i++) {
+            if(tree.get(i).size() == 1 && i != 1) {
+                isLeaf[i] = true;
+            }
+        }
     }
 
     static void solution() {
+
+        dfs(1, 0);
+
         for(int i = 1; i <= N; i++) {
-            Arrays.fill(visited, false);
-            dfs(i, 0);
+            if(isLeaf[i]) {
+                Arrays.fill(visited, false);
+                dfs(i, 0);
+            }
         }
     }
 
