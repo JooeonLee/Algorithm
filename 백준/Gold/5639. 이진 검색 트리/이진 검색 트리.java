@@ -47,26 +47,59 @@ class BST {
 }
 
 public class Main {
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
         BST bst = new BST();
         input(bst);
         bst.postOrderTraversal();
     }
 
+    static FastReader scan = new FastReader();
 
-    static void input(BST tree) throws IOException {
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        String s = "";
-
-        StringBuilder sb = new StringBuilder();
-        while((s = br.readLine()) != null && !s.isEmpty()) {
-            StringTokenizer st = new StringTokenizer(s);
-            int num = Integer.parseInt(st.nextToken());
-            tree.insert(num);
+    static void input(BST bst) {
+        while(true) {
+            String line = scan.nextLine();
+            if(line == null || line.isEmpty()) {
+                break;
+            }
+            bst.insert(Integer.parseInt(line));
         }
     }
 
-    static void solution() {
+    static class FastReader {
+        BufferedReader br;
+        StringTokenizer st;
 
+        public FastReader() {
+            br = new BufferedReader(new InputStreamReader(System.in));
+        }
+
+        String next() {
+            while (st == null || !st.hasMoreElements()) {
+                try {
+                    st = new StringTokenizer(br.readLine());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            return st.nextToken();
+        }
+
+        int nextInt() {
+            return Integer.parseInt(next());
+        }
+
+        long nextLong() {
+            return Long.parseLong(next());
+        }
+
+        String nextLine() {
+            String str = "";
+            try {
+                str = br.readLine();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return str;
+        }
     }
 }
