@@ -58,7 +58,7 @@ public class Main {
     }
 
     static void solution() {
-        for(int i=1; i<N; i++) {
+        for(int i=1; i<=N/2; i++) {
             findMinDiff(0, 0, i);
         }
         System.out.println(minDiff);
