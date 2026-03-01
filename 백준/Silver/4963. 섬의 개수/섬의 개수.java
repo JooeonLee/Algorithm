@@ -1,59 +1,67 @@
-import java.io.*;
-import java.lang.reflect.Array;
 import java.util.*;
+import java.io.*;
 
 public class Main {
-    static FastReader scan = new FastReader();
-    static StringBuilder sb = new StringBuilder();
 
-    static int N, M;
-    static int[][] a;
-    static boolean[][] visit;
-    static int[][] dir = {{1, 0}, {0, 1}, {-1, 0}, {0, -1}, {1, 1}, {1, -1}, {-1, 1}, {-1, -1}};
-
-    static void input() {
-        M = scan.nextInt();
-        N = scan.nextInt();
-        a = new int[N][M];
-        for (int i = 0; i < N; i++) for (int j = 0; j < M; j++) a[i][j] = scan.nextInt();
-        visit = new boolean[N][M];
-    }
-
-    // x, y 를 갈 수 있다는 걸 알고 방문한 상태
-    static void dfs(int x, int y) {
-        visit[x][y] = true;
-        for (int k = 0; k < 8; k++) {
-            int nx = x + dir[k][0];
-            int ny = y + dir[k][1];
-            if (nx < 0 || ny < 0 || nx >= N || ny >= M) continue;  // 지도를 벗어나는 곳으로 가는가?
-            if (a[nx][ny] == 0) continue;  // 갈 수 있는 칸인지 확인해야 한다.
-            if (visit[nx][ny]) continue;  // 이미 방문한 적이 있는 곳인가?
-            dfs(nx, ny);
-        }
-    }
-
-    static void pro() {
-        int ans = 0;
-        for (int i = 0; i < N; i++) {
-            for (int j = 0; j < M; j++) {
-                if (!visit[i][j] && a[i][j] == 1) {
-                    ans++;
-                    dfs(i, j);
-                }
-            }
-        }
-
-        System.out.println(ans);
-    }
+    static final int[] dx = {-1, -1, -1,  0, 0, 1, 1, 1};
+    static final int[] dy = {-1,  0,  1, -1, 1,-1, 0, 1};
 
     public static void main(String[] args) {
+        FastReader fr = new FastReader();
+        StringBuilder sb = new StringBuilder();
+
         while (true) {
-            input();
-            if (N == 0 && M == 0) break;
-            pro();
+            int w = fr.nextInt();
+            int h = fr.nextInt();
+            if (w == 0 && h == 0) break;
+
+            int[][] map = new int[h][w];
+            boolean[][] visited = new boolean[h][w];
+
+            for (int y = 0; y < h; y++) {
+                for (int x = 0; x < w; x++) {
+                    map[y][x] = fr.nextInt();
+                }
+            }
+
+            int islands = 0;
+            for (int y = 0; y < h; y++) {
+                for (int x = 0; x < w; x++) {
+                    if (map[y][x] == 1 && !visited[y][x]) {
+                        bfs(map, visited, w, h, x, y);
+                        islands++;
+                    }
+                }
+            }
+
+            sb.append(islands).append('\n');
         }
+
+        System.out.print(sb.toString());
     }
 
+    static void bfs(int[][] map, boolean[][] visited, int w, int h, int sx, int sy) {
+        ArrayDeque<int[]> q = new ArrayDeque<>();
+        visited[sy][sx] = true;
+        q.add(new int[]{sx, sy});
+
+        while (!q.isEmpty()) {
+            int[] cur = q.poll();
+            int x = cur[0], y = cur[1];
+
+            for (int dir = 0; dir < 8; dir++) {
+                int nx = x + dx[dir];
+                int ny = y + dy[dir];
+
+                if (nx < 0 || nx >= w || ny < 0 || ny >= h) continue;
+                if (visited[ny][nx]) continue;
+                if (map[ny][nx] == 0) continue;
+
+                visited[ny][nx] = true;
+                q.add(new int[]{nx, ny});
+            }
+        }
+    }
 
     static class FastReader {
         BufferedReader br;
@@ -70,9 +78,11 @@ public class Main {
         String next() {
             while (st == null || !st.hasMoreElements()) {
                 try {
-                    st = new StringTokenizer(br.readLine());
+                    String line = br.readLine();
+                    if (line == null) return null;
+                    st = new StringTokenizer(line);
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    throw new RuntimeException(e);
                 }
             }
             return st.nextToken();
@@ -91,13 +101,11 @@ public class Main {
         }
 
         String nextLine() {
-            String str = "";
             try {
-                str = br.readLine();
+                return br.readLine();
             } catch (IOException e) {
-                e.printStackTrace();
+                throw new RuntimeException(e);
             }
-            return str;
         }
     }
 }
