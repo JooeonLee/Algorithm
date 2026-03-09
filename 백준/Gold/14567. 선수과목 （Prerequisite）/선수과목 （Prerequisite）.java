@@ -2,97 +2,73 @@ import java.io.*;
 import java.util.*;
 
 public class Main {
+
     public static void main(String[] args) {
+        FastReader fr = new FastReader();
 
-        input();
-        topologicalSort();
-        System.out.println(sb.toString());
-    }
+        int N = fr.nextInt();
+        int M = fr.nextInt();
 
-    static FastReader scan = new FastReader();
-    static StringBuilder sb = new StringBuilder();
+        List<Integer>[] graph = new ArrayList[N + 1];
+        for (int i = 1; i <= N; i++) {
+            graph[i] = new ArrayList<>();
+        }
 
-    static int N, M;
-    static int[][] adjMatrix;
+        int[] indegree = new int[N + 1];
+        int[] semester = new int[N + 1];
 
-    static void input() {
-        N = scan.nextInt();
-        M = scan.nextInt();
-        adjMatrix = new int[N+1][N+1];
-        initAdjMatrix();
         for (int i = 0; i < M; i++) {
-            int A = scan.nextInt();
-            int B = scan.nextInt();
-            adjMatrix[A][B] = 1;
-        }
-    }
+            int A = fr.nextInt();
+            int B = fr.nextInt();
 
-    static void initAdjMatrix() {
-        for (int i = 0; i < N+1; i++) {
-            for (int j = 0; j < N+1; j++) {
-                adjMatrix[i][j] = 0;
+            graph[A].add(B);
+            indegree[B]++;
+        }
+
+        Queue<Integer> queue = new ArrayDeque<>();
+
+        for (int i = 1; i <= N; i++) {
+            if (indegree[i] == 0) {
+                queue.offer(i);
+                semester[i] = 1;
             }
         }
-    }
 
-    static void topologicalSort() {
-        int[] indegree = new int[N+1];
-        Arrays.fill(indegree, 0);
-        int[] result = new int[N+1];
-        Queue<int[]> queue = new LinkedList<>();
+        while (!queue.isEmpty()) {
+            int cur = queue.poll();
 
-        for(int i = 1; i <= N; i++) {
-            for(int j = 1; j <= N; j++) {
-                if(adjMatrix[i][j] == 1) {
-                    indegree[j]++;
+            for (int next : graph[cur]) {
+                semester[next] = Math.max(semester[next], semester[cur] + 1);
+                indegree[next]--;
+
+                if (indegree[next] == 0) {
+                    queue.offer(next);
                 }
             }
         }
 
-        for(int i = 1; i <= N; i++) {
-            if(indegree[i] == 0) {
-                queue.add(new int[] {i, 1});
-            }
+        StringBuilder sb = new StringBuilder();
+        for (int i = 1; i <= N; i++) {
+            sb.append(semester[i]).append(' ');
         }
 
-        while(!queue.isEmpty()) {
-            int[] node = queue.poll();
-            result[node[0]] = node[1];
-
-            int count = node[1] + 1;
-            for(int i = 1; i <= N; i++) {
-                if(adjMatrix[node[0]][i] == 1) {
-                    indegree[i]--;
-                    if(indegree[i] == 0) {
-                        queue.add(new int[] {i, count});
-                    }
-                }
-            }
-        }
-
-        for(int i = 1; i <= N; i++) {
-            sb.append(result[i]).append(" ");
-        }
+        System.out.println(sb);
     }
 
     static class FastReader {
         BufferedReader br;
         StringTokenizer st;
 
-        public FastReader() {
+        FastReader() {
             br = new BufferedReader(new InputStreamReader(System.in));
         }
 
-        public FastReader(String s) throws FileNotFoundException {
-            br = new BufferedReader(new FileReader(new File(s)));
-        }
-
         String next() {
-            while (st == null || !st.hasMoreElements()) {
+            while (st == null || !st.hasMoreTokens()) {
                 try {
                     st = new StringTokenizer(br.readLine());
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    throw new RuntimeException(e);
                 }
             }
             return st.nextToken();
@@ -100,24 +76,6 @@ public class Main {
 
         int nextInt() {
             return Integer.parseInt(next());
-        }
-
-        long nextLong() {
-            return Long.parseLong(next());
-        }
-
-        double nextDouble() {
-            return Double.parseDouble(next());
-        }
-
-        String nextLine() {
-            String str = "";
-            try {
-                str = br.readLine();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            return str;
         }
     }
 }
