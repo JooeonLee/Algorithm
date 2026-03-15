@@ -3,14 +3,17 @@ import java.util.*;
 
 public class Main {
 
+    static final int INF = 1_000_000;
+
     public static void main(String[] args) {
         FastReader fr = new FastReader();
 
         int n = fr.nextInt();
+        int[][] dist = new int[n + 1][n + 1];
 
-        List<Integer>[] graph = new ArrayList[n + 1];
         for (int i = 1; i <= n; i++) {
-            graph[i] = new ArrayList<>();
+            Arrays.fill(dist[i], INF);
+            dist[i][i] = 0;
         }
 
         while (true) {
@@ -21,21 +24,35 @@ public class Main {
                 break;
             }
 
-            graph[a].add(b);
-            graph[b].add(a);
+            dist[a][b] = 1;
+            dist[b][a] = 1;
         }
 
-        int[] scores = new int[n + 1];
-        int minScore = Integer.MAX_VALUE;
+        for (int k = 1; k <= n; k++) {
+            for (int i = 1; i <= n; i++) {
+                for (int j = 1; j <= n; j++) {
+                    if (dist[i][j] > dist[i][k] + dist[k][j]) {
+                        dist[i][j] = dist[i][k] + dist[k][j];
+                    }
+                }
+            }
+        }
+
+        int minScore = INF;
+        int[] score = new int[n + 1];
 
         for (int i = 1; i <= n; i++) {
-            scores[i] = bfs(i, graph, n);
-            minScore = Math.min(minScore, scores[i]);
+            int maxDist = 0;
+            for (int j = 1; j <= n; j++) {
+                maxDist = Math.max(maxDist, dist[i][j]);
+            }
+            score[i] = maxDist;
+            minScore = Math.min(minScore, maxDist);
         }
 
         List<Integer> candidates = new ArrayList<>();
         for (int i = 1; i <= n; i++) {
-            if (scores[i] == minScore) {
+            if (score[i] == minScore) {
                 candidates.add(i);
             }
         }
@@ -47,34 +64,6 @@ public class Main {
         }
 
         System.out.println(sb);
-    }
-
-    static int bfs(int start, List<Integer>[] graph, int n) {
-        int[] dist = new int[n + 1];
-        Arrays.fill(dist, -1);
-
-        Queue<Integer> queue = new LinkedList<>();
-        queue.offer(start);
-        dist[start] = 0;
-
-        while (!queue.isEmpty()) {
-            int cur = queue.poll();
-
-            for (int next : graph[cur]) {
-                if (dist[next] != -1) {
-                    continue;
-                }
-                dist[next] = dist[cur] + 1;
-                queue.offer(next);
-            }
-        }
-
-        int maxDist = 0;
-        for (int i = 1; i <= n; i++) {
-            maxDist = Math.max(maxDist, dist[i]);
-        }
-
-        return maxDist;
     }
 
     static class FastReader {
