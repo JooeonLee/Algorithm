@@ -1,15 +1,18 @@
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 class Solution {
     public int solution(int[] nums) {
-        Set<Integer> kinds = new HashSet<>();
-
-        for (int num : nums) {
-            kinds.add(num);
+        int answer = 0;
+        
+        HashMap<Integer, Integer> map = new HashMap<>();
+        for(int num: nums) {
+            map.put(num, map.getOrDefault(num, 0)+1);
         }
-
-        int maxSelect = nums.length / 2;
-        return Math.min(kinds.size(), maxSelect);
+        
+        if(map.keySet().size() < nums.length/2)
+            answer = map.keySet().size();
+        else
+            answer = nums.length/2;
+        return answer;
     }
 }
