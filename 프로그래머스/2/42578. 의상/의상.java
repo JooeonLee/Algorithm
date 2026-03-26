@@ -1,19 +1,17 @@
 import java.util.*;
-
 class Solution {
     public int solution(String[][] clothes) {
-        Map<String, Integer> typeCountMap = new HashMap<>();
-        
-        for (String[] cloth : clothes) {
-            String type = cloth[1];
-            typeCountMap.put(type, typeCountMap.getOrDefault(type, 0) + 1);
-        }
-        
         int answer = 1;
-        for (int count : typeCountMap.values()) {
-            answer *= (count + 1);
+        HashMap<String, Integer> map = new HashMap<>();
+        
+        for(int i=0; i<clothes.length; i++) {
+            map.put(clothes[i][1], map.getOrDefault(clothes[i][1], 0)+1);
         }
         
-        return answer - 1;
+        for(Integer value : map.values()) {
+            answer *= value+1;
+        }
+        
+        return answer-1;
     }
 }
