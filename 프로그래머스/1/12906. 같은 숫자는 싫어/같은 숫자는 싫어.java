@@ -1,24 +1,20 @@
 import java.util.*;
 
-class Solution {
-    public int[] solution(int[] arr) {
-        List<Integer> result = new ArrayList<>();
-
-        int prev = -1; // arr 원소는 0~9이므로 -1로 초기화
-
-        for (int num : arr) {
-            if (num != prev) {
-                result.add(num);
-                prev = num;
-            }
+public class Solution {
+    public int[] solution(int []arr) {
+        Stack<Integer> stack = new Stack<>();
+        int[] answer = {};
+        
+        stack.push(arr[0]);
+        for(int i=0; i<arr.length; i++) {
+            if(stack.peek() == arr[i])
+                continue;
+            else
+                stack.push(arr[i]);
         }
 
-        // List -> int[]
-        int[] answer = new int[result.size()];
-        for (int i = 0; i < result.size(); i++) {
-            answer[i] = result.get(i);
-        }
-
-        return answer;
+        return stack.stream()
+            .mapToInt(Integer::intValue)
+            .toArray();
     }
 }
