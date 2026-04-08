@@ -2,35 +2,48 @@ import java.util.*;
 
 class Solution {
     public int solution(int[] priorities, int location) {
-        Queue<int[]> queue = new LinkedList<>();
+        Queue<Pair> queue = new LinkedList<>();
         
-        for (int i = 0; i < priorities.length; i++) {
-            queue.offer(new int[]{priorities[i], i == location ? 1 : 0});
+        for(int i=0; i<priorities.length; i++) {
+            Pair curr = new Pair(i, priorities[i]);
+            queue.offer(curr);
         }
         
-        int order = 0;
-
-        while (!queue.isEmpty()) {
-            int[] current = queue.poll();
+        int[] order = new int[priorities.length];
+        int idx = 0;
+        
+        while(!queue.isEmpty()) {
+            Pair curr = queue.poll();
             boolean hasHigherPriority = false;
-
-            for (int[] q : queue) {
-                if (q[0] > current[0]) {
+            for(Pair p : queue) {
+                if(p.priority > curr.priority) {
                     hasHigherPriority = true;
                     break;
                 }
             }
-
-            if (hasHigherPriority) {
-                queue.offer(current);
-            } else {
-                order++;
-                if (current[1] == 1) {
-                    return order;
-                }
-            }
+            if(hasHigherPriority)
+                queue.add(curr);
+            else
+                order[idx++] = curr.idx;
         }
-
-        return order;
+        
+        int answer = -1;
+        
+        for(int i=0; i<order.length; i++) {
+            if(order[i] == location)
+                answer = i+1;
+        }
+        
+        return answer;
     }
+    
+    class Pair {
+        int idx;
+        int priority;
+        
+        public Pair(int idx, int priority) {
+            this.idx = idx;
+            this.priority = priority;
+        }
+    } 
 }
