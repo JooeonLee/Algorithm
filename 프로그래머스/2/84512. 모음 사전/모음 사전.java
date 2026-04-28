@@ -1,33 +1,21 @@
+import java.util.*;
 class Solution {
-    private final String[] vowels = {"A", "E", "I", "O", "U"};
-    private int count = 0;
-    private int answer = 0;
-
+    String[] vowels = {"A", "E", "I", "O", "U"};
+    List<String> dic = new ArrayList<>();
+    
     public int solution(String word) {
-        dfs("", word);
-        return answer;
+        generate("");
+        return dic.indexOf(word)+1;
     }
-
-    private void dfs(String current, String target) {
-        if (answer != 0) {
+    
+    void generate(String current) {
+        if(current.length() > 5)
             return;
-        }
-
-        if (current.length() == 5) {
-            return;
-        }
-
-        for (String vowel : vowels) {
-            String next = current + vowel;
-
-            count++;
-
-            if (next.equals(target)) {
-                answer = count;
-                return;
-            }
-
-            dfs(next, target);
+        if(!current.isEmpty())
+            dic.add(current);
+        
+        for(String v : vowels) {
+            generate(current + v);
         }
     }
 }
