@@ -2,19 +2,22 @@ import java.util.*;
 
 class Solution {
     public int solution(int[] citations) {
-        Arrays.sort(citations);
-        int n = citations.length;
+        int answer = 0;
+        
+        int[] sortedArr = Arrays.stream(citations)
+            .boxed()
+            .sorted(Comparator.reverseOrder())
+            .mapToInt(Integer::intValue)
+            .toArray();
+        
         int h = 0;
-
-        for (int i = 0; i < n; i++) {
-            int citation = citations[n - 1 - i]; // 뒤에서부터
-            if (citation >= i + 1) {
-                h = i + 1;
-            } else {
+        for(int i=0; i<sortedArr.length; i++) {
+            if(sortedArr[i] >= i+1)
+                h = i+1;
+            else
                 break;
-            }
         }
-
+        
         return h;
     }
 }
