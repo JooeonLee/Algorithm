@@ -4,14 +4,14 @@ class Solution {
     public long solution(int n, int[] times) {
         Arrays.sort(times);
         long left = 0;
-        long right = (long) times[times.length - 1] * n;
+        long right = (long) times[times.length - 1] * n + 1;
         long answer = 0;
         
-        while(left <= right) {
+        while(left < right) {
             long mid = left + (right - left)/2;
             if(canProcess(times, n, mid)) {
                 answer = mid;
-                right = mid -1;
+                right = mid;
             } else
                 left = mid + 1;
         }
