@@ -1,35 +1,34 @@
+import java.util.*;
+
 class Solution {
     public long solution(int n, int[] times) {
-        return bSearch(n, times);
-    }
-    
-    public static boolean determine(int n, long currTime, int[] times) {
-        long cnt = 0;
-        for(int time : times)
-            cnt += currTime / time;
-        
-        if(cnt >= n)
-            return true;
-        else
-            return false;
-    }
-    
-    public static long bSearch(int n, int[] times) {
-        long mid = 0;
+        Arrays.sort(times);
         long left = 0;
-        long right = 1000000000000000000L;
+        long right = (long) times[times.length - 1] * n;
+        long answer = 0;
         
-        while(left < right) {
-            mid = (left + right) / 2;
-            
-            if(determine(n, mid, times)) {
-                right = mid;
-            }
-            else {
+        while(left <= right) {
+            long mid = left + (right - left)/2;
+            if(canProcess(times, n, mid)) {
+                answer = mid;
+                right = mid -1;
+            } else
                 left = mid + 1;
-            }
         }
         
-        return left;
+        return answer;
+    }
+    
+    boolean canProcess(int[] times, int n, long mid) {
+        long count = 0;
+        
+        for(int t : times) {
+            count += mid / t;
+            
+            if(count >= n)
+                return true;
+        }
+        
+        return count >= n;
     }
 }
