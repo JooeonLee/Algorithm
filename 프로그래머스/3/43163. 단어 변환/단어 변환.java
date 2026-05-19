@@ -2,7 +2,6 @@ import java.util.*;
 
 class Solution {
     public int solution(String begin, String target, String[] words) {
-        // target이 words에 없으면 변환 불가
         boolean exists = false;
         for (String w : words) {
             if (w.equals(target)) {
@@ -12,7 +11,6 @@ class Solution {
         }
         if (!exists) return 0;
 
-        // BFS: (현재 단어, 변환 단계 수)
         Queue<String> q = new ArrayDeque<>();
         Queue<Integer> distQ = new ArrayDeque<>();
 
