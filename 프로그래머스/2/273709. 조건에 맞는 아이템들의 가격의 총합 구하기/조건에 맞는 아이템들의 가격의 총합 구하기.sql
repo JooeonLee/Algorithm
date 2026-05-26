@@ -1,0 +1,4 @@
+-- 코드를 작성해주세요
+SELECT SUM(ifo.PRICE) as TOTAL_PRICE
+FROM ITEM_INFO ifo
+WHERE ifo.RARITY = 'LEGEND';
