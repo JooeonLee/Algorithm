@@ -3,7 +3,7 @@ import java.util.*;
 class Solution {
     public String solution(String[] participant, String[] completion) {
         
-        String answer = "";
+        String answer = " ";
         
         HashMap<String, Integer> map = new HashMap<>();
         for(int i=0; i<participant.length; i++) {
