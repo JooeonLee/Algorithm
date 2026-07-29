@@ -2,15 +2,29 @@ import java.util.*;
 
 class Solution {
     public String solution(int[] numbers) {
-        String[] arr = new String[numbers.length];
-        for (int i = 0; i < numbers.length; i++) arr[i] = String.valueOf(numbers[i]);
-
-        Arrays.sort(arr, (a, b) -> (b + a).compareTo(a + b)); // 내림차순
-
-        if (arr[0].equals("0")) return "0";
-
+        String answer = "";
+        ArrayList<Integer> numberList = new ArrayList<>();
+        for(int num : numbers)
+            numberList.add(num);
+        
+        numberList.sort((a, b) -> {
+            String ab = String.valueOf(a) + String.valueOf(b);
+            String ba = String.valueOf(b) + String.valueOf(a);
+            
+            int numAb = Integer.parseInt(ab);
+            int numBa = Integer.parseInt(ba);
+            
+            return Integer.compare(numBa, numAb);
+        });
+        
+        if(numberList.get(0) == 0)
+            return "0";
+        
         StringBuilder sb = new StringBuilder();
-        for (String s : arr) sb.append(s);
+        
+        for(Integer number : numberList)
+            sb.append(number);
+        
         return sb.toString();
     }
 }
