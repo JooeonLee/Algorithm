@@ -2,30 +2,37 @@ import java.util.*;
 
 class Solution {
     public int solution(int[][] sizes) {
-        int answer = 0;
+        int maxWidth = 0;
+        int maxHeight = 0;
         
-        int maxW = 0;
-        int maxH = 0;
-        
-        for(int[] rec : sizes) {
-            int currW = rec[0];
-            int currH = rec[1];
-            int currMax = 0;
-            int currMaxTurn = 0;
+        for(int[] e : sizes) {
+            int currArea1 = 0;
+            int currWidth1 = maxWidth;
+            int currHeight1 = maxHeight;
+            if(e[0] > maxWidth)
+                currWidth1 = e[0];
+            if(e[1] > maxHeight)
+                currHeight1 = e[1];
+            currArea1 = currWidth1 * currHeight1;
             
-            currMax = Math.max(maxW, currW) * Math.max(maxH, currH);
-            currMaxTurn = Math.max(maxW, currH) * Math.max(maxH, currW);
+            int currArea2 = 0;
+            int currWidth2 = maxWidth;
+            int currHeight2 = maxHeight;
+            if(e[1] > maxWidth)
+                currWidth2 = e[1];
+            if(e[0] > maxHeight)
+                currHeight2 = e[0];
+            currArea2 = currWidth2 * currHeight2;
             
-            if(currMax < currMaxTurn) {
-                maxW = Math.max(maxW, currW);
-                maxH = Math.max(maxH, currH);
+            if(currArea1 <= currArea2) {
+                maxWidth = currWidth1;
+                maxHeight = currHeight1;
             }
             else {
-                maxW = Math.max(maxW, currH);
-                maxH = Math.max(maxH, currW);
+                maxWidth = currWidth2;
+                maxHeight = currHeight2;
             }
         }
-        answer = maxW * maxH;
-        return answer;
+        return maxWidth * maxHeight;
     }
 }
