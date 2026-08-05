@@ -2,27 +2,30 @@ import java.util.*;
 
 class Solution {
     public int[][] solution(int[][] nodeinfo) {
-        ArrayList<Integer> answer = new ArrayList<>();
-        int[][] answers = new int[2][];
+        int[][] answer = new int[2][];
+        Node root = makeTree(nodeinfo);
+        ArrayList<Integer> pre = new ArrayList<>();
+        preOrder(root, pre);
         
-        Node root = makeBT(nodeinfo);
-        preOrder(root, answer);
-        answers[0] = answer.stream()
+        ArrayList<Integer> post = new ArrayList<>();
+        postOrder(root, post);
+        
+        answer[0] = pre.stream()
+            .mapToInt(Integer::intValue)
+            .toArray();
+        answer[1] = post.stream()
             .mapToInt(Integer::intValue)
             .toArray();
         
-        answer.clear();
-        postOrder(root, answer);
-        answers[1] = answer.stream()
-            .mapToInt(Integer::intValue)
-            .toArray();
-        
-        return answers;
+        return answer;
     }
     
-    private static class Node {
-        int x, y, num;
-        Node left, right;
+    private class Node {
+        int num;
+        int x;
+        int y;
+        Node left;
+        Node right;
         
         public Node(int num, int x, int y) {
             this.num = num;
@@ -31,60 +34,65 @@ class Solution {
         }
     }
     
-    private static Node makeBT(int[][] nodeinfo) {
-        Node[] nodes = new Node[nodeinfo.length];
-        for(int i=0; i<nodeinfo.length; i++) {
-            nodes[i] = new Node(i+1, nodeinfo[i][0], nodeinfo[i][1]);
+    private Node makeTree(int[][] nodeInfo) {
+        ArrayList<Node> nodeArr = new ArrayList<>();
+        
+        for(int i=0; i<nodeInfo.length; i++) {
+            int[] currNodeInfo = nodeInfo[i];
+            Node currNode = new Node(i+1, currNodeInfo[0], currNodeInfo[1]);
+            nodeArr.add(currNode);
         }
         
-        Arrays.sort(nodes, (n1, n2) -> {
-            if(n1.y == n2.y)
-                return Integer.compare(n1.x, n2.x);
-            return Integer.compare(n2.y, n1.y);
+        nodeArr.sort((a, b) -> {
+            if(a.y != b.y)
+                return Integer.compare(b.y, a.y);
+            else
+                return Integer.compare(a.x, b.x);
         });
         
-        Node root = nodes[0];
+        Node root = nodeArr.get(0);
         
-        for(int i=1; i<nodes.length; i++) {
-            Node parent = root;
-            while(true) {
-                if(nodes[i].x < parent.x) {
-                    if(parent.left == null) {
-                        parent.left = nodes[i];
-                        break;
-                    }
-                    else
-                        parent = parent.left;
-                }
-                
-                else {
-                    if(parent.right == null) {
-                        parent.right = nodes[i];
-                        break;
-                    }
-                    else
-                        parent = parent.right;
-                }
+        for(int i=1; i<nodeArr.size(); i++) {
+            Node currNode = nodeArr.get(i);
+            setNode(root, currNode);
+        }
+        
+        return root;
+    }
+    
+    private void setNode(Node target, Node addedNode) {
+        if(target.x > addedNode.x) {
+            if(target.left == null) {
+                target.left = addedNode;
+                return;
+            }
+            else {
+                setNode(target.left, addedNode);
             }
         }
-        return nodes[0];
+        else {
+            if(target.right == null) {
+                target.right = addedNode;
+            }
+            else {
+                setNode(target.right, addedNode);
+            }
+        }
     }
     
-    private static void preOrder(Node curr, ArrayList<Integer> answer) {
-        if(curr == null)
-            return;
-        
-        answer.add(curr.num);
-        preOrder(curr.left, answer);
-        preOrder(curr.right, answer);
+    private void preOrder(Node curr, ArrayList<Integer> result) {
+        result.add(curr.num);
+        if(curr.left != null)
+            preOrder(curr.left, result);
+        if(curr.right != null)
+            preOrder(curr.right, result);
     }
     
-    private static void postOrder(Node curr, ArrayList<Integer> answer) {
-        if(curr == null)
-            return;
-        
-        postOrder(curr.left, answer);
-        postOrder(curr.right, answer);
-        answer.add(curr.num);
+    private void postOrder(Node curr, ArrayList<Integer> result) {
+        if(curr.left != null)
+            postOrder(curr.left, result);
+        if(curr.right != null)
+            postOrder(curr.right, result);
+        result.add(curr.num);
     }
 }
