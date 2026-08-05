@@ -2,32 +2,30 @@ import java.util.*;
 
 class Solution {
     public int[] solution(int brown, int yellow) {
-        ArrayList<Integer> answer = new ArrayList<>();
-        int[] aArr = measure(yellow);
+        int[] answer = new int[2];
         
-        for(int a : aArr) {
-            int b = yellow / a;
-            
-            int currBrown = (a+2) * (b+2) - yellow;
-            if(currBrown == brown) {
-                answer.add(b+2);
-                answer.add(a+2);
+        int total = brown + yellow;
+        ArrayList<int[]> yMeasure = measure(yellow);
+        
+        for(int[] e : yMeasure) {
+            if((e[0]+2) * (e[1]+2) == total) {
+                answer[0] = e[1] + 2;
+                answer[1] = e[0] + 2;
             }
         }
-        return answer.stream()
-            .mapToInt(Integer::intValue)
-            .toArray();
+        
+        return answer;
     }
     
-    public int[] measure(int yellow) {
-        ArrayList<Integer> result = new ArrayList<>();
+    private ArrayList<int[]> measure(int num) {
+        ArrayList<int[]> result = new ArrayList<>();
+        int mid = (int)Math.sqrt(num);
         
-        for(int i=1; i<=Math.sqrt(yellow); i++)
-            if(yellow % i == 0)
-                result.add(i);
+        for(int i=1; i<=mid; i++) {
+            if(num % i == 0)
+                result.add(new int[]{i, num/i});
+        }
         
-        return result.stream()
-            .mapToInt(Integer::intValue)
-            .toArray();
-    }
+        return result;
+    } 
 }
