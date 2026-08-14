@@ -2,50 +2,25 @@ import java.util.*;
 
 class Solution {
     public int[] solution(String[] operations) {
-        PriorityQueue<Integer> pqA = new PriorityQueue<>();
-        PriorityQueue<Integer> pqD = new PriorityQueue<>(Collections.reverseOrder());
+        int[] answer = {};
+        TreeSet<Integer> ts = new TreeSet<>();
         
-        int cnt = 0;
-        int numlength = 0;
-        for(String operation : operations) {
-            String[] arr = operation.split(" ");
-            String operationType = arr[0];
-            String numString = arr[1];
+        for(String element : operations) {
+            String[] opt = element.split(" ");
+            String operation = opt[0];
+            int num = Integer.parseInt(opt[1]);
             
-            if(operationType.equals("I")) {
-                int num = Integer.parseInt(numString);
-                pqA.offer(num);
-                pqD.offer(num);
-                numlength++;
-            }
-            
-            if(operationType.equals("D")) {
-                int num = Integer.parseInt(numString);
-                
-                if(num == 1 && cnt < operations.length) {
-                    if(!pqD.isEmpty()) {
-                        Integer min = pqD.poll();
-                        if(!pqA.isEmpty())
-                            pqA.remove(min);
-                        cnt++;
-                    }
-                }
-                else if(num == -1 && cnt < operations.length) {
-                    if(!pqA.isEmpty()) {
-                        Integer max = pqA.poll();
-                        if(!pqD.isEmpty())
-                            pqD.remove(max);
-                        cnt++;
-                    }
-                }
-            }
+            if(operation.equals("I"))
+                ts.add(num);
+            else if(num == 1 && !ts.isEmpty())
+                ts.pollLast();
+            else if(num == -1 && !ts.isEmpty())
+                ts.pollFirst();
         }
         
-        int[] answer = new int[2];
-        if(cnt < numlength) {
-            answer[0] = pqD.peek();
-            answer[1] = pqA.peek();
-        }
-        return answer;
+        if(ts.isEmpty())
+            return new int[]{0, 0};
+        else
+            return new int[]{ts.last(), ts.first()};
     }
 }
