@@ -17,6 +17,8 @@ class Solution
       int A = sc.nextInt();
       int B = sc.nextInt();
       int[][] visit = new int[K][2];
+      for(int[] v : visit)
+        Arrays.fill(v, -1);
 
       int[] a = new int[N];
       for (int i = 0; i < N; i++) {
