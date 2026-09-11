@@ -1,0 +1,69 @@
+import java.util.*;
+import java.io.*;
+
+public class Solution {
+    static int[] trees = new int[100];
+    static int N;
+
+    public static void main(String[] args) {
+      FastReader fr = new FastReader();
+      StringBuilder sb = new StringBuilder();
+
+      int T = fr.nextInt();
+
+      for(int t=1; t<=T; t++) {
+        N = fr.nextInt();
+        int maxTree = -1;
+        for(int i=0; i<N; i++) {
+          trees[i] = fr.nextInt();
+          maxTree = Math.max(maxTree, trees[i]);
+        }
+
+        int oneCnt = 0;
+        int twoCnt = 0;
+
+        for(int i=0; i<N; i++) {
+          int diff = maxTree - trees[i];
+
+          oneCnt += diff % 2;
+          twoCnt += diff / 2;
+        }
+
+        while(twoCnt > oneCnt + 1) {
+          twoCnt--;
+          oneCnt += 2;
+        }
+
+        int maxDay = Math.max(2 * oneCnt - 1, 2 * twoCnt);
+
+        sb.append('#').append(t).append(' ').append(maxDay).append('\n');
+      }
+
+      System.out.print(sb);
+    }
+
+    static class FastReader {
+      BufferedReader br;
+      StringTokenizer st;
+
+      public FastReader() {
+        br = new BufferedReader(new InputStreamReader(System.in));
+      }
+
+      String next() {
+        while(st==null || !st.hasMoreTokens()) {
+          try {
+            st = new StringTokenizer(br.readLine());
+          } catch(Exception e) {
+            e.printStackTrace();
+          }
+        }
+        return st.nextToken();
+      }
+
+      int nextInt() {
+        return Integer.parseInt(next());
+      }
+
+    }
+}
