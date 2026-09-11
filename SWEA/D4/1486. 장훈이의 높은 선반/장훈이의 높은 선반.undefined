@@ -1,0 +1,75 @@
+import java.util.*;
+import java.io.*;
+ 
+public class Solution {
+    static int N, B;
+    static int[] ns = new int[20];
+    static boolean[] canMake = new boolean[200_001];
+ 
+    public static void main(String[] args) {
+        FastReader fr = new FastReader();
+        StringBuilder sb = new StringBuilder();
+        int T = fr.nextInt();
+ 
+        for(int t=1; t<=T; t++) {
+            N = fr.nextInt();
+            B = fr.nextInt();
+ 
+            for(int i=0; i<N; i++)
+                ns[i] = fr.nextInt();
+ 
+            Arrays.fill(canMake, false);
+ 
+            dfs(0, 0);
+ 
+            int answer = Integer.MAX_VALUE;
+ 
+            for(int i=B; i<canMake.length; i++) {
+                if(canMake[i]) {
+                    answer = i - B;
+                    break;
+                }
+            }
+ 
+            sb.append('#').append(t).append(' ')
+              .append(answer).append('\n');
+        }
+ 
+        System.out.print(sb);
+    }
+ 
+    static void dfs(int currSum, int start) {
+        for(int i=start; i<N; i++) {
+            int nextSum = currSum + ns[i];
+ 
+            canMake[nextSum] = true;
+ 
+            dfs(nextSum, i + 1);
+        }
+    }
+ 
+    static class FastReader {
+        BufferedReader br;
+        StringTokenizer st;
+ 
+        public FastReader() {
+            br = new BufferedReader(new InputStreamReader(System.in));
+        }
+ 
+        String next() {
+            while(st == null || !st.hasMoreTokens()) {
+                try {
+                    st = new StringTokenizer(br.readLine());
+                } catch(Exception e) {
+                    e.printStackTrace();
+                }
+            }
+ 
+            return st.nextToken();
+        }
+ 
+        int nextInt() {
+            return Integer.parseInt(next());
+        }
+    }
+}
