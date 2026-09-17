@@ -1,57 +1,87 @@
 import java.util.*;
 
 class Solution {
-    public int solution(int[] info, int[][] edges) {
-        buildTree(info, edges);
-        int answer = 0;
-        
-        ArrayDeque<Info> queue = new ArrayDeque<>();
-        queue.add(new Info(0, 1, 0, new HashSet<>()));
-        
-        while(!queue.isEmpty()) {
-            Info curr = queue.poll();
-            answer = Math.max(answer, curr.sheep);
-            
-            curr.visited.addAll(tree[curr.node]);
-            
-            for(int next : curr.visited) {
-                HashSet<Integer> nextVisited = new HashSet<>(curr.visited);
-                nextVisited.remove(next);
-                
-                if(info[next] == 1){
-                    if(curr.sheep != curr.wolf + 1)
-                        queue.add(new Info(next, curr.sheep, curr.wolf+1, nextVisited));
-                }
-                else {
-                    queue.add(new Info(next, curr.sheep+1, curr.wolf, nextVisited));
-                }
-            }
-        }
-        
-        return answer;
+    static int answer;
+    static ArrayList<Node> tree;
 
+    public int solution(int[] info, int[][] edges) {
+        answer = 0;
+        tree = new ArrayList<>();
+
+        for(int i = 0; i < info.length; i++) {
+            tree.add(new Node(info[i]));
+        }
+
+        for(int[] edge : edges) {
+            Node parent = tree.get(edge[0]);
+            Node child = tree.get(edge[1]);
+
+            parent.setChild(child);
+        }
+
+        Node root = tree.get(0);
+
+        ArrayList<Node> candidates = new ArrayList<>();
+
+        if(root.leftChild != null)
+            candidates.add(root.leftChild);
+
+        if(root.rightChild != null)
+            candidates.add(root.rightChild);
+
+        dfs(1, 0, candidates);
+
+        return answer;
     }
-    
-    private static class Info {
-        int node, sheep, wolf;
-        HashSet<Integer> visited;
-        
-        public Info(int node, int sheep, int wolf, HashSet<Integer> visited) {
-            this.node = node;
-            this.sheep = sheep;
-            this.wolf = wolf;
-            this.visited = visited;
+
+    static void dfs(int sCnt, int wCnt, ArrayList<Node> candidates) {
+        answer = Math.max(answer, sCnt);
+
+        for(int i = 0; i < candidates.size(); i++) {
+            Node curr = candidates.get(i);
+
+            int nextScnt = sCnt;
+            int nextWcnt = wCnt;
+
+            if(curr.type == 0)
+                nextScnt++;
+            else
+                nextWcnt++;
+
+            // 늑대 수가 양 수 이상이면 더 이상 탐색 불가
+            if(nextWcnt >= nextScnt)
+                continue;
+
+            // 현재 선택한 노드를 후보에서 제거
+            ArrayList<Node> nextCandidates = new ArrayList<>(candidates);
+            nextCandidates.remove(i);
+
+            // 현재 노드의 자식을 새로운 후보로 추가
+            if(curr.leftChild != null)
+                nextCandidates.add(curr.leftChild);
+
+            if(curr.rightChild != null)
+                nextCandidates.add(curr.rightChild);
+
+            dfs(nextScnt, nextWcnt, nextCandidates);
         }
     }
-    
-    private static ArrayList<Integer>[] tree;
-    
-    private static void buildTree(int[] info, int[][] edges) {
-        tree = new ArrayList[info.length];
-        for(int i=0; i<tree.length; i++)
-            tree[i] = new ArrayList<>();
-        
-        for(int[] edge : edges)
-            tree[edge[0]].add(edge[1]);
+
+    static class Node {
+        int type;
+
+        Node leftChild;
+        Node rightChild;
+
+        public Node(int type) {
+            this.type = type;
+        }
+
+        public void setChild(Node child) {
+            if(leftChild == null)
+                leftChild = child;
+            else
+                rightChild = child;
+        }
     }
 }
