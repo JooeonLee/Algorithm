@@ -6,7 +6,7 @@ public class Main {
     static int N;
     static TreeSet<Integer> lights;
     static ArrayList<Integer> position;
-    static PriorityQueue<Gap> pq;
+    static TreeSet<Gap> gaps;
 
     static class Gap {
         int left;
@@ -15,10 +15,6 @@ public class Main {
         Gap(int left, int right) {
             this.left = left;
             this.right = right;
-        }
-
-        int length() {
-            return right - left;
         }
     }
 
@@ -36,24 +32,19 @@ public class Main {
                 int M = fr.nextInt();
 
                 init();
+                int prev = -1;
 
                 for (int i = 0; i < M; i++) {
                     int x = fr.nextInt();
 
                     lights.add(x);
                     position.add(x);
-                }
 
-                Integer prev = null;
-
-                for (int x : lights) {
-                    if (prev != null) {
-                        pq.offer(new Gap(prev, x));
-                    }
-
+                    if(prev != -1)
+                        gaps.add(new Gap(prev, x));
+                    
                     prev = x;
                 }
-
             } else if (command == 200) {
 
                 addLight();
@@ -79,27 +70,35 @@ public class Main {
 
         position.add(-1);
 
-        pq = new PriorityQueue<>((a, b) -> {
-            if (a.length() != b.length()) {
-                return Integer.compare(b.length(), a.length());
-            }
+        gaps = new TreeSet<>((a, b) -> {
+            int distA = a.right - a.left;
+            int distB = b.right - b.left;
 
-            return Integer.compare(a.left, b.left);
+            if (distA != distB) 
+                return Integer.compare(distB, distA);
+
+            if(a.left != b.left)
+                return Integer.compare(a.left, b.left);
+
+            return Integer.compare(a.right, b.right);
         });
     }
 
     static void addLight() {
 
-        Gap gap = getMaxGap();
+        Gap gap = gaps.first();
 
         int left = gap.left;
         int right = gap.right;
         int mid = left + (right - left + 1) / 2;
 
+        gaps.remove(gap);
+
         lights.add(mid);
         position.add(mid);
-        pq.offer(new Gap(left, mid));
-        pq.offer(new Gap(mid, right));
+
+        gaps.add(new Gap(left, mid));
+        gaps.add(new Gap(mid, right));
     }
 
     static void removeLight(int id) {
@@ -109,11 +108,16 @@ public class Main {
         Integer left = lights.lower(x);
         Integer right = lights.higher(x);
 
+        if(left != null)
+            gaps.remove(new Gap(left, x));
+
+        if(right != null)
+            gaps.remove(new Gap(x, right));
+
         lights.remove(x);
 
-        if (left != null && right != null) {
-            pq.offer(new Gap(left, right));
-        }
+        if(left != null && right != null) 
+            gaps.add(new Gap(left, right));
     }
 
     static int getMinPower() {
@@ -124,42 +128,17 @@ public class Main {
         int leftPower = 2 * (first - 1);
         int rightPower = 2 * (N - last);
 
-        Gap maxGap = getMaxGap();
+        int middlePower = 0;
 
-        int middlePower = maxGap.length();
+        if(!gaps.isEmpty()) {
+            Gap maxGap = gaps.first();
+            middlePower = maxGap.right - maxGap.left;
+        }
 
         return Math.max(
                 Math.max(leftPower, rightPower),
                 middlePower
         );
-    }
-
-    static Gap getMaxGap() {
-
-        while (!pq.isEmpty()) {
-
-            Gap gap = pq.peek();
-
-            if (isValid(gap)) {
-                return gap;
-            }
-
-            pq.poll();
-        }
-
-        return null;
-    }
-
-    static boolean isValid(Gap gap) {
-
-        if (!lights.contains(gap.left)
-                || !lights.contains(gap.right)) {
-            return false;
-        }
-
-        Integer next = lights.higher(gap.left);
-
-        return next != null && next == gap.right;
     }
 
     static class FastReader {
