@@ -1,91 +1,54 @@
 import java.util.*;
+import java.io.*;
+
+class Node {
+    final int value;
+    ArrayList<Integer> children = new ArrayList<>();
+    Node(int info) {
+        this.value = (info == 0) ? 1 : -1;
+    }
+}
 
 class Solution {
-    static int answer = 0;
-    static ArrayList<Node> tree = new ArrayList<>();
+    
+    int maxSheep = 0;
+    
     public int solution(int[] info, int[][] edges) {
-        for(int i=0; i<info.length; i++) {
-            tree.add(new Node(i, info[i]));
+        Node[] grassland = new Node[info.length];
+        for (int i = 0; i < info.length; i++) {
+            grassland[i] = new Node(info[i]);
         }
         
-        for(int[] edge : edges) {
-            Node parent = tree.get(edge[0]);
-            Node child = tree.get(edge[1]);
-            
-            parent.setChild(child);
-            child.setParent(parent);
+        for (int i = 0; i < edges.length; i++) {
+            int parent = edges[i][0];
+            int child = edges[i][1];
+            grassland[parent].children.add(child);
         }
         
-        Node root = tree.get(0);
-        ArrayList<Node> candidates = new ArrayList<>();
-        if(root.leftChild != null)
-            candidates.add(root.leftChild);
-        if(root.rightChild != null)
-            candidates.add(root.rightChild);
-        dfs(1, 0, candidates);
-        return answer;
+        dfs(grassland, 1, 0, grassland[0].children);
+        
+        return maxSheep;
     }
     
-    static void dfs(int sCnt, int wCnt, ArrayList<Node> candidates) {
-        answer = Math.max(answer, sCnt);
-        for(int i=0; i<candidates.size(); i++) {
-            Node curr = candidates.get(i);
-            
-            int nextScnt = sCnt;
-            int nextWcnt = wCnt;
-            
-            if(curr.type == 0)
-                nextScnt++;
-            else
-                nextWcnt++;
-            
-            if(nextWcnt >= nextScnt)
-                continue;
-            
-            ArrayList<Node> nextCandidates = new ArrayList<>(candidates);
-            nextCandidates.remove(i);
-            
-            if(curr.leftChild!=null)
-                nextCandidates.add(curr.leftChild);
-            if(curr.rightChild!=null)
-                nextCandidates.add(curr.rightChild);
-            
-            dfs(nextScnt, nextWcnt, nextCandidates);
-        }
-    }
-    
-    static class Node {
-        int idx;
-        int type;
-        int totalSheep;
-        int totalWolf;
+    private void dfs(Node[] grassland, int sheep, int wolf, ArrayList<Integer> nextCandidate) {
+        maxSheep = Math.max(sheep, maxSheep);
         
-        Node parent;
-        Node leftChild;
-        Node rightChild;
-        
-        public Node(int idx, int type) {
-            this.type = type;
-            this.totalSheep = 0;
-            this.totalWolf = 0;
-        }
-        
-        public void setChild(Node child) {
-            if(leftChild==null && rightChild==null)
-                leftChild = child;
-            else if(leftChild!=null) {
-                Node currChild = leftChild;
-                if(currChild.idx > child.idx) {
-                    leftChild = child;
-                    rightChild = currChild;
+        for (int next : nextCandidate) {
+            if (sheep + wolf + grassland[next].value > 0) {
+                ArrayList<Integer> nextnextCandidate = new ArrayList<>();
+                nextnextCandidate.addAll(grassland[next].children);
+                for (int candidate : nextCandidate) {
+                    if (candidate == next) continue;
+                    nextnextCandidate.add(candidate);
                 }
-                else
-                    rightChild = child;
+                if (grassland[next].value > 0) {
+                    dfs(grassland, sheep + 1, wolf, nextnextCandidate);
+                } else {
+                    dfs(grassland, sheep, wolf - 1, nextnextCandidate);
+                }
             }
         }
         
-        public void setParent(Node parent) {
-            parent = parent;
-        }
+        
     }
 }
