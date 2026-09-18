@@ -117,7 +117,7 @@ public class Main {
             if (streetlights.get(road.rightIdx).left.idx != road.leftIdx || streetlights.get(road.leftIdx).right.idx != road.rightIdx) {
                 continue;
             }
-            pq.add(road);
+            //pq.add(road);
             break;
         }
         pq.addAll(temp);
