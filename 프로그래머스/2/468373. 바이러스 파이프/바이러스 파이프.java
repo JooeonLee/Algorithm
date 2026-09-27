@@ -10,57 +10,48 @@ class Solution {
     ArrayList<Edge>[] graph;
     
     static class Edge {
-        int from;
         int to;
         int type;
         
-        public Edge(int from, int to, int type) {
-            this.from = from;
+        public Edge(int to, int type) {
             this.to = to;
             this.type = type;
         }
     }
     
     static class State {
-        int deepth;
+        int depth;
         int[] visited;
         
-        public State(int deepth, int[] visited) {
-            this.deepth = deepth;
+        public State(int depth, int[] visited) {
+            this.depth = depth;
             this.visited = visited;
         }
     }
     
-    public void dfs(int deepth, int[] visited, int k) {
-        if(deepth == k) {
+    // 상태 공간 탐색 위한 dfs
+    public void dfs(State s, int k) {
+        if(s.depth == k) {
             int cnt = 0;
-            for(int i=1; i<visited.length; i++)
-                if(visited[i] == 1)
+            for(int i=1; i<s.visited.length; i++)
+                if(s.visited[i] == 1)
                     cnt++;
             
             maxCnt = Math.max(maxCnt, cnt);
             return;
         }
         
-        State currState = new State(deepth, visited);
-        
         for(int i=1; i<=3; i++) {
-            // 1 type 선택
-            int[] nextVisited1 = bfs(1, currState);
-            dfs(deepth+1, nextVisited1, k);
-            
-            // 2 type 선택
-            int[] nextVisited2 = bfs(2, currState);
-            dfs(deepth+1, nextVisited2, k);
-            
-            // 3 type 선택
-            int[] nextVisited3 = bfs(3, currState);
-            dfs(deepth+1, nextVisited3, k);
+            // i type 선택
+            int[] next = s.visited.clone();
+            bfs(i, next);
+            State nextS = new State(s.depth + 1, next);
+            dfs(nextS, k);
         }
     }
     
-    public int[] bfs(int type, State state) {
-        int[] visited = state.visited.clone();
+    // State와 연 파이프 타입이 주어졌을 때 얼마나 퍼지는지 구하는 함수
+    public void bfs(int type, int[] visited) {
         Queue<Integer> queue = new ArrayDeque<>();
         
         for(int i=1; i<visited.length; i++) {
@@ -79,11 +70,10 @@ class Solution {
             }
         }
         
-        return visited;
+        return;
     }
     
     public int solution(int n, int infection, int[][] edges, int k) {
-        int answer = 0;
         graph = new ArrayList[n+1];
         int[] visited = new int[n+1];
         visited[infection] = 1;
@@ -91,14 +81,15 @@ class Solution {
             graph[i] = new ArrayList<>();
         
         for(int[] e : edges) {
-            Edge edge1 = new Edge(e[0], e[1], e[2]);
-            Edge edge2 = new Edge(e[1], e[0], e[2]);
+            Edge edge1 = new Edge(e[1], e[2]);
+            Edge edge2 = new Edge(e[0], e[2]);
             
             graph[e[0]].add(edge1);
             graph[e[1]].add(edge2);
         }
         
-        dfs(0, visited, k);
+        State s = new State(0, visited);
+        dfs(s, k);
         
         
         return maxCnt;
