@@ -1,56 +1,70 @@
 import java.util.*;
 
-/*
-힌트 번들이 뭘까? -> 이해가 안되는디 ㅠㅠ
-1. 일단 번들을 산다.
-2. 번들을 이용해서 나중에 할인 받을 수 있는 비용을 확인한다.
-3. 번들을 이용해서 할인 받을수 있는 비용이 번들을 사는 가격보다 크면 번들을 사는 것이 이득이다.
-
-힌트의 최대수인 n이 16가지
-즉 힌트를 사용할지 말지 확인할 수 있는 경우의 수는 2^16 가지
--> 완탐 가능할듯?, 어떻게? -> 비트마스킹 사용해보자!
-*/
 class Solution {
+
+    int[][] cost;
+    int[][] hint;
+
+    int L;
+    int answer;
+
+    int[] hintCnt;
+    int[][] given;
+
     public int solution(int[][] cost, int[][] hint) {
-        
-        int n = cost.length;
-        int[][] given = new int[n - 1][n];
-        
-        for (int i = 0; i < n - 1; i++) {
+
+        answer = Integer.MAX_VALUE;
+
+        this.cost = cost;
+        this.hint = hint;
+
+        L = cost.length;
+
+        hintCnt = new int[L];
+        given = new int[hint.length][L];
+
+        // 각 힌트 번들이 각 스테이지에 몇 개의 힌트를 주는지 계산
+        for (int i = 0; i < hint.length; i++) {
             for (int j = 1; j < hint[i].length; j++) {
                 int stage = hint[i][j] - 1;
-                
                 given[i][stage]++;
             }
         }
-        
-        int answer = Integer.MAX_VALUE;
-        
-        int maxMask = 1 << (n - 1);
-        
-        for (int mask = 0; mask < maxMask; mask++) {
-            int[] hintCnt = new int[n];
-            int totalCost = 0;
-            
-            for (int i = 0; i < n - 1; i++) {
-                // 해당 mask에서 i번 번들 구매
-                if ((mask & (1 << i)) != 0) {
-                    totalCost += hint[i][0];
-                    
-                    for (int stage = 0; stage < n; stage++) {
-                        hintCnt[stage] += given[i][stage];
-                    }
-                }
-            }
-            
-            for (int stage = 0; stage < n; stage++) {
-                int hintNum = Math.min(hintCnt[stage], n - 1);
-                totalCost += cost[stage][hintNum];
-            }
-            
-            answer = Math.min(answer, totalCost);
-        }
-        
+
+        dfs(0, 0);
+
         return answer;
+    }
+
+    private void dfs(int depth, int totalCost) {
+        // 모든 힌트 번들의 구매 여부를 결정함
+        if (depth == hint.length) {
+            int value = totalCost;
+            for (int stage = 0; stage < L; stage++) {
+                int cnt = Math.min(
+                    L - 1,
+                    hintCnt[stage]
+                );
+                value += cost[stage][cnt];
+            }
+            answer = Math.min(answer, value);
+
+            return;
+        }
+
+        // 현재 힌트 번들 구매 X
+        dfs(depth + 1, totalCost);
+
+        // 현재 힌트 번들 구매 O
+        for (int stage = 0; stage < L; stage++) {
+            hintCnt[stage] += given[depth][stage];
+        }
+
+        dfs(depth + 1, totalCost + hint[depth][0]);
+
+        // 상태 원상복구
+        for (int stage = 0; stage < L; stage++) {
+            hintCnt[stage] -= given[depth][stage];
+        }
     }
 }
