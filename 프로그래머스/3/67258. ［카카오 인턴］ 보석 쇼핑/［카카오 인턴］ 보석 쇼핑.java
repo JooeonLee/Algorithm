@@ -2,29 +2,45 @@ import java.util.*;
 
 class Solution {
     public int[] solution(String[] gems) {
-        int kinds = (int) Arrays.stream(gems).distinct().count();
-        
-        Map<String, Integer> window = new HashMap<>();
-        int left = 0, right = 0;
-        int bestLeft = 0, bestLen = Integer.MAX_VALUE;
-        
-        while(right < gems.length) {
-            window.merge(gems[right], 1, Integer::sum);
-            
-            while(window.size() == kinds) {
-                if(right - left + 1 < bestLen) {
-                    bestLen = right - left + 1;
-                    bestLeft = left;
+        int totalType = new HashSet<>(Arrays.asList(gems)).size();
+
+        Map<String, Integer> map = new HashMap<>();
+
+        int left = 0;
+        int right = 0;
+
+        int minLength = Integer.MAX_VALUE;
+        int answerLeft = 0;
+        int answerRight = 0;
+
+        while (right < gems.length) {
+
+            map.put(gems[right], map.getOrDefault(gems[right], 0) + 1);
+
+            while (map.size() == totalType) {
+
+                int length = right - left + 1;
+
+                if (length < minLength) {
+                    minLength = length;
+                    answerLeft = left;
+                    answerRight = right;
                 }
-                
-                window.merge(gems[left], -1, Integer::sum);
-                if(window.get(gems[left]) == 0)
-                    window.remove(gems[left]);
+
+                String gem = gems[left];
+
+                map.put(gem, map.get(gem) - 1);
+
+                if (map.get(gem) == 0) {
+                    map.remove(gem);
+                }
+
                 left++;
             }
+
             right++;
         }
-        
-        return new int[]{bestLeft+1, bestLeft + bestLen};
+
+        return new int[]{answerLeft + 1, answerRight + 1};
     }
 }
