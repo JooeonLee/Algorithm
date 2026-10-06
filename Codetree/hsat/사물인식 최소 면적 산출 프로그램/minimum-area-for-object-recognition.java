@@ -2,98 +2,99 @@ import java.util.*;
 import java.io.*;
 
 public class Main {
+
     static int N;
     static int K;
+
     static int answer = Integer.MAX_VALUE;
-    // 색별로 구분한 point 리스트
+
+    // 색깔별 점 목록
     static ArrayList<int[]>[] points;
-    
+
     public static void main(String[] args) {
-        Scanner sc = new Scanner(System.in);
+
         FastReader fr = new FastReader();
 
         N = fr.nextInt();
         K = fr.nextInt();
 
-        int[] x = new int[N];
-        int[] y = new int[N];
-        int[] c = new int[N];
-        points = new ArrayList[K+1];
-        for(int i=0; i<=K; i++)
-            points[i] = new ArrayList<>();
-        for (int i = 0; i < N; i++) {
-            x[i] = fr.nextInt();
-            y[i] = fr.nextInt();
-            c[i] = fr.nextInt();
+        points = new ArrayList[K + 1];
 
-            points[c[i]].add(new int[]{x[i], y[i]});
+        for (int i = 1; i <= K; i++) {
+            points[i] = new ArrayList<>();
         }
-        // Please write your code here.
-        dfs(new State(Integer.MIN_VALUE, Integer.MAX_VALUE, Integer.MIN_VALUE, Integer.MAX_VALUE, 0));
+
+        for (int i = 0; i < N; i++) {
+            int x = fr.nextInt();
+            int y = fr.nextInt();
+            int color = fr.nextInt();
+
+            points[color].add(new int[]{x, y});
+        }
+
+        dfs(0, Integer.MAX_VALUE, Integer.MIN_VALUE, Integer.MAX_VALUE, Integer.MIN_VALUE);
+
         System.out.println(answer);
     }
 
-    static class State {
-        int maxR;
-        int minR;
-        int maxC;
-        int minC;
+    static void dfs(int cnt, int minX, int maxX, int minY, int maxY) {
 
-        int selectCnt;
-
-        public State(int maxR, int minR, int maxC, int minC, int selectCnt) {
-            this.maxR = maxR;
-            this.minR = minR;
-            this.maxC = maxC;
-            this.minC = minC;
-
-            this.selectCnt = selectCnt;
-        }
-    }
-
-    static void dfs(State s) {
-        if(s.selectCnt == K) {
-            answer = Math.min(answer, (s.maxR-s.minR)*(s.maxC-s.minC));
+        // 모든 색깔에서 하나씩 선택 완료
+        if (cnt == K) {
+            int area = (maxX - minX) * (maxY - minY);
+            answer = Math.min(answer, area);
             return;
         }
 
-        for(int[] point : points[s.selectCnt+1]) {
-            int nMaxR = Math.max(s.maxR, point[0]);
-            int nMinR = Math.min(s.minR, point[0]);
-            int nMaxC = Math.max(s.maxC, point[1]);
-            int nMinC = Math.min(s.minC, point[1]);
+        // 다음 색깔
+        int color = cnt + 1;
 
-            int currWidth = (nMaxR-nMinR)*(nMaxC-nMinC);
-            
-            // 가지치기
-            if(currWidth > answer)
+        for (int[] point : points[color]) {
+            int x = point[0];
+            int y = point[1];
+
+            int nextMinX = Math.min(minX, x);
+            int nextMaxX = Math.max(maxX, x);
+            int nextMinY = Math.min(minY, y);
+            int nextMaxY = Math.max(maxY, y);
+
+            int area = (nextMaxX - nextMinX) * (nextMaxY - nextMinY);
+
+            // 앞으로 점을 더 추가해도 직사각형의 넓이는
+            // 작아질 수 없으므로 탐색 중단
+            if (area >= answer)
                 continue;
 
-            dfs(new State(nMaxR, nMinR, nMaxC, nMinC, s.selectCnt+1));
+            dfs(cnt + 1, nextMinX, nextMaxX, nextMinY, nextMaxY);
         }
     }
 
     static class FastReader {
+
         BufferedReader br;
         StringTokenizer st;
 
         public FastReader() {
-            br = new BufferedReader(new InputStreamReader(System.in));
+            br = new BufferedReader(
+                new InputStreamReader(System.in)
+            );
         }
 
         String next() {
-            while(st==null || !st.hasMoreTokens()) {
+
+            while (st == null || !st.hasMoreTokens()) {
                 try {
                     st = new StringTokenizer(br.readLine());
-                } catch(Exception e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
+
             return st.nextToken();
         }
 
         int nextInt() {
-          return Integer.parseInt(next());
+            return Integer.parseInt(next());
         }
     }
 }
