@@ -4,123 +4,62 @@ import java.util.*;
 public class Main {
 
     static int N, M;
-    static int[][] map;
+    static int[][] dp;
+    static int[] wall;
 
-    static int[] matched;
-    static boolean[] visited;
+    public static void main(String[] args) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
-    static int[] dr = {-1, 1, 0, 0};
-    static int[] dc = {0, 0, -1, 1};
+        StringTokenizer st = new StringTokenizer(br.readLine());
+        int N = Integer.parseInt(st.nextToken());
+        int M = Integer.parseInt(st.nextToken());
+        dp = new int[N][1 << M];
 
-    public static void main(String[] args) {
-        FastReader fr = new FastReader();
-
-        N = fr.nextInt();
-        M = fr.nextInt();
-
-        map = new int[N][M];
-
-        int emptyCnt = 0;
-
-        for (int r = 0; r < N; r++) {
-            for (int c = 0; c < M; c++) {
-                map[r][c] = fr.nextInt();
-
-                if (map[r][c] == 0) {
-                    emptyCnt++;
+        wall = new int[N];
+        for (int i = 0; i < N; i++) {
+            st = new StringTokenizer(br.readLine());
+            int currMask = 0;
+            for (int j = 0; j < M; j++) {
+                if (Integer.parseInt(st.nextToken()) == 1) {
+                    currMask |= (1 << (M - j - 1));
                 }
             }
+            wall[i] = currMask;
         }
-
-        matched = new int[N * M];
-        Arrays.fill(matched, -1);
-
-        int matchingCnt = 0;
-
-        for (int r = 0; r < N; r++) {
-            for (int c = 0; c < M; c++) {
-
-                if (map[r][c] == 1)
+        
+        for (int i = 0; i < N; i++) {
+            for (int j = 0; j < (1 << M); j++) {
+                if(!isEmpty(i, j))
                     continue;
-
-                if ((r + c) % 2 != 0)
+                if(!isLeftRightNotSelected(j))
                     continue;
-
-                visited = new boolean[N * M];
-
-                int curr = getIndex(r, c);
-
-                if (dfs(curr)) {
-                    matchingCnt++;
+                if (i != 0) {
+                    for (int k = 0; k < (1 << M); k++) {
+                        if ((j & k) == 0) {
+                            dp[i][j] = Math.max(dp[i][j], dp[i - 1][k]);
+                        }
+                    }
                 }
+                // if (isEmpty(i, j) && isLeftRightNotSelected(j)) {
+                //     dp[i][j] += Integer.bitCount(j);;
+                // }
+                dp[i][j] += Integer.bitCount(j);
             }
         }
 
-        System.out.println(emptyCnt - matchingCnt);
+        int maxSelected = 0;
+        for (int j = 0; j < (1 << M); j++) {
+            maxSelected = Math.max(maxSelected, dp[N-1][j]);
+        }
+        System.out.println(maxSelected);
+        br.close();
     }
 
-    static boolean dfs(int curr) {
-
-        int r = curr / M;
-        int c = curr % M;
-
-        for (int d = 0; d < 4; d++) {
-            int nr = r + dr[d];
-            int nc = c + dc[d];
-
-            if (!isRange(nr, nc))
-                continue;
-
-            if (map[nr][nc] == 1)
-                continue;
-
-            int next = getIndex(nr, nc);
-
-            if (visited[next])
-                continue;
-
-            visited[next] = true;
-
-            if (matched[next] == -1 || dfs(matched[next])) {
-                matched[next] = curr;
-                return true;
-            }
-        }
-
-        return false;
+    private static boolean isEmpty(int row, int curr) {
+        return ((curr & wall[row]) == 0);
     }
 
-    static int getIndex(int r, int c) {
-        return r * M + c;
-    }
-
-    static boolean isRange(int r, int c) {
-        return r >= 0 && r < N && c >= 0 && c < M;
-    }
-
-    static class FastReader {
-
-        BufferedReader br;
-        StringTokenizer st;
-
-        FastReader() {
-            br = new BufferedReader(new InputStreamReader(System.in));
-        }
-
-        String next() {
-            while (st == null || !st.hasMoreTokens()) {
-                try {
-                    st = new StringTokenizer(br.readLine());
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-
-            return st.nextToken();
-        }
-
-        int nextInt() {
-            return Integer.parseInt(next());
-        }
+    private static boolean isLeftRightNotSelected(int curr) {
+        return ((curr & (curr << 1)) == 0);
     }
 }
