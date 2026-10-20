@@ -129,14 +129,15 @@ public class Main {
         // 3. 판정 결과를 한꺼번에 반영
         Map<Integer, Container> nextMap = new HashMap<>();
 
-        for (Container curr : mapContainer.values()) {
+        for(Container curr : mapContainer.values()) {
             if (movable[curr.id]) {
                 int d = board[curr.r][curr.c] - 1;
 
                 curr.r += dr[d];
                 curr.c += dc[d];
                 curr.unMoveCnt = 0;
-            } else {
+            } 
+            else {
                 curr.unMoveCnt++;
             }
 
