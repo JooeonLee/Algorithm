@@ -1,4 +1,5 @@
 import java.util.*;
+import java.io.*;
 
 /**
 dp[i][j] : 
@@ -8,16 +9,29 @@ j: j만큼의 돈
 public class Main {
     static int INF = Integer.MAX_VALUE;
 
-    public static void main(String[] args) {
-        Scanner sc = new Scanner(System.in);
-        int n = sc.nextInt();
-        int m = sc.nextInt();
+    public static void main(String[] args) throws IOException {
+        // Scanner sc = new Scanner(System.in);
+        // int n = sc.nextInt();
+        // int m = sc.nextInt();
+        // char[] cType = new char[n+1];
+        // int[] coin = new int[n+1];
+        // for (int i = 1; i <= n; i++) {
+        //     cType[i] = sc.next().charAt(0);
+        //     coin[i] = sc.nextInt();
+        // }
+
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringTokenizer st = new StringTokenizer(br.readLine());
+        int n = Integer.parseInt(st.nextToken());
+        int m = Integer.parseInt(st.nextToken());
         char[] cType = new char[n+1];
         int[] coin = new int[n+1];
         for (int i = 1; i <= n; i++) {
-            cType[i] = sc.next().charAt(0);
-            coin[i] = sc.nextInt();
+            st = new StringTokenizer(br.readLine());
+            cType[i] = st.nextToken().charAt(0);
+            coin[i] = Integer.parseInt(st.nextToken());
         }
+
         // Please write your code here.
         // int[][] dp = new int[n+1][m+1];
         // for(int i=0; i<=n; i++)
