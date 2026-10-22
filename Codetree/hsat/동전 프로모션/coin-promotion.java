@@ -53,7 +53,7 @@ public class Main {
                     int prev = dp[amount-currCoin];
                     if(prev==INF)
                         continue;
-                    dp[amount] = Math.min(dp[amount], dp[amount-currCoin]+1);   
+                    dp[amount] = Math.min(dp[amount], prev+1);   
                 }
             }
             else {
@@ -61,7 +61,7 @@ public class Main {
                     int prev = dp[amount-currCoin];
                     if(prev==INF)
                         continue;
-                    dp[amount] = Math.min(dp[amount], dp[amount-currCoin]+1);
+                    dp[amount] = Math.min(dp[amount], prev+1);
                 }
             }
         }
