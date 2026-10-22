@@ -1,44 +1,48 @@
-
 import java.util.*;
-import java.io.*;
 
+/**
+dp[i][j] : 
+i: i번째 동전 확인
+j: j만큼의 돈
+*/
 public class Main {
-    static final int INF = 1_000_000_000;
+    static int INF = Integer.MAX_VALUE;
 
-    public static void main(String[] args) throws IOException {
-        BufferedReader br = new BufferedReader(
-            new InputStreamReader(System.in)
-        );
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        int n = sc.nextInt();
+        int m = sc.nextInt();
+        char[] cType = new char[n+1];
+        int[] coin = new int[n+1];
+        for (int i = 1; i <= n; i++) {
+            cType[i] = sc.next().charAt(0);
+            coin[i] = sc.nextInt();
+        }
+        // Please write your code here.
+        int[][] dp = new int[n+1][m+1];
+        for(int i=0; i<=n; i++)
+            Arrays.fill(dp[i], Integer.MAX_VALUE);
+        dp[0][0] = 0;
 
-        StringTokenizer st = new StringTokenizer(br.readLine());
-        int N = Integer.parseInt(st.nextToken());
-        int M = Integer.parseInt(st.nextToken());
+        for(int i=1; i<=n; i++) {
+            int currCoin = coin[i];
+            for(int amount=0; amount<=m; amount++) {
+                // 현재 동전 선택 안함
+                dp[i][amount] = dp[i-1][amount];
 
-        int[] dp = new int[M+1];
-        Arrays.fill(dp, INF);
-        dp[0] = 0;
+                // 현재 동전 선택할 때 이전 상태 확인할 수 없다면
+                if(amount < currCoin)
+                    continue;
 
-        for (int i=0; i<N; i++) {
-            st = new StringTokenizer(br.readLine());
-
-            String type = st.nextToken();
-            int coin = Integer.parseInt(st.nextToken());
-
-            if(type.equals("A")) {
-                for (int j = coin; j <= M; j++) {
-                    if (dp[j - coin] != INF) {
-                        dp[j] = Math.min(dp[j], dp[j - coin] + 1);
-                    }
-                }
-            }
-            else {
-                for (int j = M; j >= coin; j--) {
-                    if (dp[j - coin] != INF) {
-                        dp[j] = Math.min(dp[j], dp[j - coin] + 1);
-                    }
-                }
+                // 이전 동전 확인
+                // A 무한 냅색
+                // B 0/1 냅색
+                int prev = cType[i]=='A' ? dp[i][amount-currCoin] : dp[i-1][amount-currCoin];
+                if(prev != INF)
+                    dp[i][amount] = Math.min(dp[i][amount], prev+1);
             }
         }
-        System.out.println(dp[M] == INF ? -1 : dp[M]);
+        int answer = dp[n][m]==INF ? -1 : dp[n][m];
+        System.out.print(answer);
     }
 }
