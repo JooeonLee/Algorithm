@@ -9,8 +9,8 @@ class Solution {
 
         ArrayDeque<int[]> queue = new ArrayDeque<>();
 
-        int numberOfArea = 0;
-        int maxSizeOfOneArea = 0;
+        int cnt = 0;
+        int maxSize = 0;
 
         for(int r = 0; r < m; r++) {
             for(int c = 0; c < n; c++) {
@@ -19,7 +19,7 @@ class Solution {
                 }
 
                 // 방문하지 않은 색칠된 칸 → 새로운 영역
-                numberOfArea++;
+                cnt++;
 
                 int color = picture[r][c];
                 int area = 1;
@@ -28,11 +28,11 @@ class Solution {
                 queue.offerLast(new int[]{r, c});
 
                 while(!queue.isEmpty()) {
-                    int[] cur = queue.pollFirst();
+                    int[] curr = queue.pollFirst();
 
                     for(int d = 0; d < 4; d++) {
-                        int nr = cur[0] + dr[d];
-                        int nc = cur[1] + dc[d];
+                        int nr = curr[0] + dr[d];
+                        int nc = curr[1] + dc[d];
 
                         if(nr < 0 || nr >= m || nc < 0 || nc >= n)
                             continue;
@@ -46,10 +46,10 @@ class Solution {
                     }
                 }
 
-                maxSizeOfOneArea = Math.max(maxSizeOfOneArea, area);
+                maxSize = Math.max(maxSize, area);
             }
         }
 
-        return new int[]{numberOfArea, maxSizeOfOneArea};
+        return new int[]{cnt, maxSize};
     }
 }
