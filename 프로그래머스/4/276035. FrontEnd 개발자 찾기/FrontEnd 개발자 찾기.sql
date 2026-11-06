@@ -4,10 +4,9 @@ select d.ID,
     d.FIRST_NAME,
     d.LAST_NAME
 from developers d
-where exists(
-    select 1
-    from skillcodes s
-    where category = 'Front End'
-    and d.skill_code & s.code = s.code
-)
+where (
+    select bit_or(s.CODE)
+    from SKILLCODES s
+    where s.CATEGORY = 'Front End'
+) & d.SKILL_CODE != 0
 order by d.ID asc;
