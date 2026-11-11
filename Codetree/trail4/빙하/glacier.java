@@ -33,7 +33,6 @@ public class Main {
         for(int[] outW : outWater) 
             q.offer(new State(0, outW[0], outW[1]));
 
-        int cnt = 0;
         while(!q.isEmpty()) {
             State curr = q.poll();
             if(maxTime < curr.time && init[curr.r][curr.c]==1) {
