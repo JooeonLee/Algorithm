@@ -1,17 +1,19 @@
-with recursive HOURS as(
+-- 코드를 입력하세요
+with recursive base as(
     select 0 as HOUR
     
-    union all 
+    union all
     
-    select HOUR+1
-    from HOURS
-    where HOUR < 23
+    select
+        b.HOUR + 1 
+    from base b
+    where b.HOUR < 23
 )
 select
-    h.HOUR,
-    count(ao.ANIMAL_ID) as `COUNT`
-from HOURS h
+    b.HOUR,
+    count(ao.ANIMAL_ID) as COUNT
+from base b
 left join ANIMAL_OUTS ao
-on h.HOUR = hour(ao.DATETIME)
-group by h.HOUR
-order by HOUR;
+on b.HOUR = hour(ao.DATETIME)
+group by b.HOUR
+order by b.HOUR
