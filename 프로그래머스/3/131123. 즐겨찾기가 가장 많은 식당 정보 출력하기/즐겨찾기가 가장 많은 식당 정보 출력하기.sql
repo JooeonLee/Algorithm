@@ -1,17 +1,17 @@
 -- 코드를 입력하세요
-with cte as(
-    select
-        ri.FOOD_TYPE,
-        max(ri.FAVORITES) as MAX_FAVORITES
-    from REST_INFO ri
-    group by ri.FOOD_TYPE
-)
+/**
+
+*/
 select
-    ri.FOOD_TYPE,
-    ri.REST_ID,
-    ri.REST_NAME,
-    ri.FAVORITES
-from REST_INFO ri
-join cte
-on ri.FOOD_TYPE=cte.FOOD_TYPE and ri.FAVORITEs=cte.MAX_FAVORITES
-order by ri.FOOD_TYPE desc;
+    rio.FOOD_TYPE,
+    rio.REST_ID,
+    rio.REST_NAME,
+    rio.FAVORITES
+from REST_INFO rio
+where (rio.FOOD_TYPE, rio.FAVORITES) in (
+    select
+        rii.FOOD_TYPE,
+        max(rii.FAVORITES)
+    from REST_INFO rii
+    group by rii.FOOD_TYPE)
+order by rio.FOOD_TYPE desc;
