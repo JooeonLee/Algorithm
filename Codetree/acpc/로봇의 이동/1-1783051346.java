@@ -1,104 +1,73 @@
-import java.util.*;
 import java.io.*;
+import java.util.*;
 
 public class Main {
     static int n;
     static int[][] grid;
     static int[][][] visited;
-    static int[] dr = new int[]{1, 0, -1, 0};
-    static int[] dc = new int[]{0, -1, 0, 1};
+    static int[] dr = {1, 0, -1, 0};
+    static int[] dc = {0, -1, 0, 1};
 
-    public static void main(String[] args) {
-        // Please write your code here.
+    public static void main(String[] args) throws IOException {
         FastReader fr = new FastReader();
+
         n = fr.nextInt();
         grid = new int[n][n];
         visited = new int[n][n][4];
-        for(int i=0; i<n; i++)
-            for(int j=0; j<n; j++)
-                grid[i][j] = fr.nextInt();
+
+        for(int r = 0; r < n; r++)
+            for(int c = 0; c < n; c++)
+                grid[r][c] = fr.nextInt();
 
         ArrayDeque<int[]> q = new ArrayDeque<>();
-        int answer=-1;
+        int answer = -1;
+
         // r, c, time, dir
         q.offerLast(new int[]{1, 1, 0, -1});
+
         while(!q.isEmpty()) {
             int[] curr = q.pollFirst();
+            int r = curr[0];
+            int c = curr[1];
+            int time = curr[2];
+            int dir = curr[3];
 
-            if(curr[0]==n-2 && curr[1]==n-2) {
-                answer = curr[2];
+            if(r == n - 2 && c == n - 2) {
+                answer = time;
                 break;
             }
 
-            if(curr[3]==-1) {
-                for(int i=0; i<4; i++) {
-                    int nr = curr[0] + dr[i];
-                    int nc = curr[1] + dc[i];
+            for(int nextDir = 0; nextDir < 4; nextDir++) {
+                // 앞 칸이 비어 있으면 방향을 바꿀 수 없음
+                if(dir != -1 && nextDir != dir && grid[r+dr[dir]][c+dc[dir]] == 0)
+                    continue;
 
-                    if(!isValidIdx(nr, nc))
-                        continue;
-                    if(grid[nr][nc]==1)
-                        continue;
-                    if(visited[nr][nc][i]==1)
-                        continue;
-                    q.offerLast(new int[]{nr, nc, curr[2]+1, i});
-                    visited[nr][nc][i] = 1;
-                }
-            }
-            else {
-                int nr = curr[0] + dr[curr[3]];
-                int nc = curr[1] + dc[curr[3]];
+                int nr = r + dr[nextDir];
+                int nc = c + dc[nextDir];
 
-                if(!isValidIdx(nr, nc) || grid[nr][nc]==1) {
-                    for(int i=0; i<4; i++) {
-                        nr = curr[0] + dr[i];
-                        nc = curr[1] + dc[i];
+                if(grid[nr][nc] == 1 || visited[nr][nc][nextDir] == 1)
+                    continue;
 
-                        if(!isValidIdx(nr, nc))
-                            continue;
-                        if(grid[nr][nc]==1)
-                            continue;
-                        if(visited[nr][nc][i]==1)
-                            continue;
-                        
-                        q.offerLast(new int[]{nr, nc, curr[2]+1, i});
-                        visited[nr][nc][i] = 1;
-                    }
-                }
-                else if(visited[nr][nc][curr[3]] == 0) {
-                    q.offerLast(new int[]{nr, nc, curr[2]+1, curr[3]});
-                    visited[nr][nc][curr[3]] = 1;
-                }
+                visited[nr][nc][nextDir] = 1;
+                q.offerLast(new int[]{nr, nc, time+1, nextDir});
             }
         }
+
         System.out.println(answer);
-
-    }
-
-    static boolean isValidIdx(int r, int c) {
-        return r>=0 && r<n && c>=0 && c<n;
     }
 
     static class FastReader {
-        BufferedReader br;
-        StringTokenizer st;
+        private final BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        private StringTokenizer st;
 
-        public FastReader() {
-            br = new BufferedReader(new InputStreamReader(System.in));
-        }
-
-        public String next() {
-            while(st==null || !st.hasMoreTokens()) {
-                try {
-                    st = new StringTokenizer(br.readLine());
-                } catch(Exception e) {
-                    e.printStackTrace();
-                }
+        String next() throws IOException {
+            while(st == null || !st.hasMoreTokens()) {
+                st = new StringTokenizer(br.readLine());
             }
             return st.nextToken();
         }
 
-        public int nextInt() {
+        int nextInt() throws IOException {
             return Integer.parseInt(next());
         }
     }
